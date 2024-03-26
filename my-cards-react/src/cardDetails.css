@@ -1,0 +1,37 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns for all rows */
+    gap: 10px; /* Adjust gap between items */
+    overflow: hidden;
+    max-height: 1000px; /* Set initial max-height to a value larger than your content */
+    transition: max-height 0.5s ease; /* Transition max-height */
+}
+
+.grid-container.collapsed {
+    max-height: 0; /* Collapse the height of the grid-container */
+}
+
+.grid-item:nth-child(1) {
+    grid-row: 1; /* First row */
+    grid-column: 1 / span 2; /* Span across both columns */
+}
+
+.grid-item:nth-child(2),
+.grid-item:nth-child(3) {
+    grid-row: 2; /* Second row */
+}
+
+.grid-item:nth-child(4),
+.grid-item:nth-child(5) {
+    grid-row: 3; /* Third row */
+}
+
+.grid-item {
+    background-color: #ccc;
+    padding: 3px;
+    text-align: center;
+}
+
+.search-bar{
+    height: 10px;
+}
