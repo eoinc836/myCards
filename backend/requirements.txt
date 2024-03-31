@@ -1,0 +1,8 @@
+setuptools==68.2.2
+wheel==0.41.2
+flask
+pymysql
+requests
+flask_cors
+gunicorn
+python-dotenv

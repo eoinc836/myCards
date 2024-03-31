@@ -3,13 +3,14 @@ import axios from 'axios';
 import './cardDetails.css';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-
+import { motion } from 'framer-motion';
+import CardDisplay from './cardDisplay';
 function CardDetails(){
     const [cardName, setCardName] = useState('');
     const [cardQnt, setCardQnt] = useState(0);
     const [setCode, setSetCode] = useState('');
-    const [cardCondition, setCardCondition] = useState('');
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(true);
+
 
     function toggleCollapse(){
       setIsCollapsed(!isCollapsed);
@@ -21,12 +22,18 @@ function CardDetails(){
         { label: 'Select Card', value: 'Select Card' },
       ];
 
-      const handleAutoCompleteChange = (event, value) => {
-        console.log(value); // Check what value is being received
-        if (value) {
-            setCardName(value.label); // Set the label of the selected option as cardName
-        }
-    };
+    
+
+    const [isSearchBoxActive, setSearchBoxActive] = useState(false);
+      
+    const handleAutoCompleteChange = () => {
+          setSearchBoxActive(true);
+        };
+      
+    const handleBlur = () => {
+          setSearchBoxActive(false);
+        };
+      
 
     const handleQntChange = (event)=>{
         setCardQnt(parseFloat(event.target.value))
@@ -43,20 +50,14 @@ function CardDetails(){
         console.log(event.target.value)
     }
 
-    const handleConditionChange = (event) => {
-        setCardCondition(event.target.value)
-        console.log(event.target.value)
-    }
-
       const cardData = {
         'name' :cardName,
         'qnt' : cardQnt,
         'setCode' : setCode,
-        'condition' : cardCondition
       }
       
       const addCard = () => {
-        axios.post('http://localhost:5000/addCard', cardData) // Adjust the URL to your Flask backend endpoint
+        axios.post('http://localhost:3000/addCard', cardData) // Adjust the URL to your Flask backend endpoint
           .then(response => {
             console.log(response);
           })
@@ -66,7 +67,7 @@ function CardDetails(){
       };
 
       const removeCard = () => {
-        axios.post('http://localhost:5000/removeCard', cardData) // Adjust the URL to your Flask backend endpoint
+        axios.post('http://localhost:3000/removeCard', cardData) // Adjust the URL to your Flask backend endpoint
           .then(response => {
             console.log(response);
           })
@@ -77,48 +78,64 @@ function CardDetails(){
 
     return (
       <div>
-      <div className={`grid-container ${isCollapsed ? 'collapsed' : ''}`}>
-            <div className="grid-item">
-        
-                <input type='text' placeholder='Card Name'
-                onChange={handleNameChange}/>
-
-
-            </div>
-            <div className="grid-item">
-                <input type='text' placeholder='Set Code'
-                onChange={handleSetCodeChange}/>
-            </div>
-            <div className="grid-item">
-                <select name="condition" id="conditions"
-                onChange={handleConditionChange}>
-                    <option value="nm">Near Mint</option>
-                    <option value="ex">Excellent</option>
-                    <option value="lp">Light Play</option>
-                    <option value="hp">Heavy Play</option>
-                </select>   
-            </div>
-            <div className="grid-item">
-                <input type='number'
-                    onChange={handleQntChange}
-                />
-            </div>
-            <div className="grid-item">
-                <button onClick={addCard}>Add</button>
-                <button onClick={removeCard}>Remove</button>
-            </div>
+        <motion.div
+        className={`grid-container`}
+        initial={false}
+        animate={{ height: isCollapsed ? 0 : 'auto' }}
+        transition={{ duration: 0.3 }}
+      >
+        <div class="grid-item">
+          <input type='text' placeholder='Card Name' onChange={handleNameChange}/>
         </div>
-         <div>
-         <Autocomplete
-                onChange={handleAutoCompleteChange}
-                options={options}
-                getOptionLabel={(option) => option.label}
-                renderInput={(params) => <TextField {...params} placeholder="Name" />}
-                />
-          <button onClick={toggleCollapse}>Toggle Collapse</button>
-         </div>
-         
+        <div class="grid-item">
+          <input type='text' placeholder='Set Code' onChange={handleSetCodeChange}/>
+        </div>
+        <div class="grid-item">
+          <input type='number' onChange={handleQntChange}/>
+        </div>
+        <div class="grid-item">
+          <button onClick={addCard}>Add</button>
+        </div>
+        <div class="grid-item">
+          <button onClick={removeCard}>Remove</button>
+        </div>
+      </motion.div>
+      <div className='search-bar'>
+      <Autocomplete
+        id='autocomplete-bar'
+        onChange={handleAutoCompleteChange}
+        options={options}
+        getOptionLabel={(option) => option.label}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            placeholder="Name"
+            onFocus={handleAutoCompleteChange}
+            onBlur={handleBlur}
+          />
+        )}
+      />
+    </div>
+      <div className='util-bar'>
+      <motion.button
+          id='toggleButton'
+          animate={{ rotate: isCollapsed ? 180 : 360 }} 
+          onClick={toggleCollapse}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+      >
+          <motion.img
+              id='toggleImage'
+              src="/millenium-puzzle-icon.png"
+              alt="collapse button"
+              style={{ display: isSearchBoxActive ? 'none' : 'block' }}
+          />
+      </motion.button>
+
       </div>
+      <CardDisplay isCollapsed={isCollapsed} />
+  </div>
+  
+  
     );
 }
 

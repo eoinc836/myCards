@@ -1,18 +1,38 @@
-import pymysql
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
+import pymysql
 import requests
-app = Flask(__name__)
-CORS(app)
+import os
+from dotenv import load_dotenv
+load_dotenv()
+app = Flask(__name__, static_folder='../build', static_url_path='/')
+CORS(app, supports_credentials=True)
 
-def create_tables():
+db_host = os.environ.get('DATABASE_ADDRESS')
+db_user = os.environ.get('DATABASE_USER')
+db_password = os.environ.get('DATABASE_PASSWORD')
+db_name = os.environ.get('DATABASE_NAME')
+
+
+# Define a route to serve the React frontend
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve(path):
+    # If the path matches any API route, pass the request to the API
+    if path.startswith('addCard') or path.startswith('removeCard') or path.startswith('retrieveImages'):
+        return jsonify({'message': 'Invalid route for frontend'})
+    # Otherwise, serve the React frontend
+    return send_from_directory(app.static_folder, 'index.html')
+
+
+def create_tables(): 
     try:
         conn = pymysql.connect(
-            host='mycards.cn4wywegwo3g.eu-west-1.rds.amazonaws.com',
+            host=db_host,
             port=3306,
-            user='admin',
-            password='Brockhampton24r!',
-            db='cards'
+            user=db_user,
+            password=db_password,
+            db=db_name
         )
         cursor = conn.cursor()
         cardCollectionTableQuery = """
@@ -47,11 +67,11 @@ def index():
 @app.route('/addCard', methods=['POST'])
 def add_card():
     conn = pymysql.connect(
-            host='mycards.cn4wywegwo3g.eu-west-1.rds.amazonaws.com',
+            host=db_host,
             port=3306,
-            user='admin',
-            password='Brockhampton24r!',
-            db='cards'
+            user=db_user,
+            password=db_password,
+            db=db_name
         )
     cursor = conn.cursor()
 
@@ -110,11 +130,11 @@ def add_card():
 @app.route('/removeCard', methods=['POST'])
 def remove_card():
     conn = pymysql.connect(
-            host='mycards.cn4wywegwo3g.eu-west-1.rds.amazonaws.com',
+            host=db_host,
             port=3306,
-            user='admin',
-            password='Brockhampton24r!',
-            db='cards'
+            user=db_user,
+            password=db_password,
+            db=db_name
         )
     cursor = conn.cursor()
 
@@ -141,11 +161,11 @@ def remove_card():
 @app.route('/retrieveImages', methods=['POST'])
 def retrieveImages():
     conn = pymysql.connect(
-            host='mycards.cn4wywegwo3g.eu-west-1.rds.amazonaws.com',
+            host=db_host,
             port=3306,
-            user='admin',
-            password='Brockhampton24r!',
-            db='cards'
+            user=db_user,
+            password=db_password,
+            db=db_name
         )
     cursor = conn.cursor()
 
