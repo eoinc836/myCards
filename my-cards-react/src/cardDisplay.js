@@ -54,12 +54,12 @@ function CardDisplay({isCollapsed}) {
                         <motion.div
                             className="card-container"
                             key={index}
-                            animate={{ scale: isCollapsed ? 1.1 : 1 }}
+                            animate={{ scale: isCollapsed ? 1.2 : 1 }}
                         >
                             
                             <motion.div
                             className='overlay'
-                            animate={{ scale: isCollapsed ? 1.1 : 1 }}>
+                            animate={{ scale: isCollapsed ? 1.2 : 1 }}>
                                 <p className='set'>{overlayData[key]['set']}</p>
                                 <p className='qnt'>{overlayData[key]['qnt']}</p>
                                 <p className='price'>€{overlayData[key]['price']}</p>
